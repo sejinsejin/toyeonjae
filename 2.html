@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>당신에게 보내는 편지</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nanum Myeongjo', serif;
+            margin: 0;
+            overflow: hidden;
+            /* 배경: 단정한 짙은 네이비 */
+            background-color: #1e1b4b; 
+        }
+        
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .envelope-flap {
+            transform-origin: top;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.8s;
+        }
+        
+        .envelope:hover .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        .letter-content {
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .envelope:hover .letter-content {
+            transform: translateY(-50px);
+        }
+
+        /* 편지봉투 종이 질감 효과 */
+        .paper-texture {
+            background-color: #f3f4f6;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        
+        /* 손 흔들기 애니메이션 */
+        @keyframes hand-point {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .animate-hand {
+            animation: hand-point 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center overflow-hidden">
+
+    <!-- 오디오 설정 -->
+    <audio id="bgmAudio" loop>
+        <source src="bgm.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="clickAudio">
+        <source src="effect.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 텍스트 영역 -->
+    <div class="z-10 text-center mb-12 relative animate-fade-in-up px-4">
+        <h1 class="text-3xl md:text-4xl text-white font-bold mb-5 tracking-wide drop-shadow-lg opacity-90">연재야, 너에게 꼭 하고 싶은 말이 있어</h1>
+        <div class="w-12 h-px bg-white/40 mx-auto mb-5"></div>
+        <p class="text-blue-100/80 text-sm md:text-base font-light leading-relaxed tracking-wide">
+            부담 갖지 말고, 시간 될 때 읽어주면 좋겠어.<br>
+            <span class="font-bold text-white/95 mt-1 block">이 책을 끝까지 읽고 확인해 줘.</span>
+        </p>
+    </div>
+
+    <!-- 편지봉투 컨테이너 -->
+    <div class="relative w-80 h-52 md:w-96 md:h-64 bg-transparent perspective-1000 group cursor-pointer envelope drop-shadow-2xl">
+        
+        <!-- 편지 내용물 (속지) -->
+        <div class="letter-content absolute bottom-0 left-4 right-4 h-full bg-white rounded-t-sm shadow-md border-x border-t border-gray-100 flex items-start justify-center pt-8 z-0">
+            <div class="w-full px-6 space-y-3 opacity-60">
+                <div class="h-0.5 bg-gray-400 w-full"></div>
+                <div class="h-0.5 bg-gray-400 w-full"></div>
+                <div class="h-0.5 bg-gray-400 w-3/4"></div>
+                <div class="h-0.5 bg-gray-400 w-full mt-6"></div>
+                <div class="h-0.5 bg-gray-400 w-1/2"></div>
+            </div>
+        </div>
+
+        <!-- 봉투 몸통 (뒷면) -->
+        <div class="absolute inset-0 paper-texture rounded-b-md shadow-inner z-10 flex items-end justify-center overflow-hidden border border-gray-300">
+            <!-- 그림자 효과 -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none"></div>
+            
+            <!-- 왼쪽 접힘 -->
+            <div class="absolute top-0 left-0 w-0 h-0 border-l-[160px] md:border-l-[192px] border-b-[100px] md:border-b-[120px] border-l-[#e5e7eb] border-b-transparent shadow-sm"></div>
+            <!-- 오른쪽 접힘 -->
+            <div class="absolute top-0 right-0 w-0 h-0 border-r-[160px] md:border-r-[192px] border-b-[100px] md:border-b-[120px] border-r-[#e5e7eb] border-b-transparent shadow-sm"></div>
+            <!-- 아래쪽 덮개 -->
+            <div class="absolute bottom-0 w-full h-0 border-l-[160px] md:border-l-[192px] border-r-[160px] md:border-r-[192px] border-b-[110px] md:border-b-[140px] border-l-transparent border-r-transparent border-b-[#f3f4f6]"></div>
+        </div>
+
+        <!-- 봉투 뚜껑 (윗면 - 애니메이션) -->
+        <div class="envelope-flap absolute top-0 left-0 w-full h-0 border-l-[160px] md:border-l-[192px] border-r-[160px] md:border-r-[192px] border-t-[110px] md:border-t-[140px] border-l-transparent border-r-transparent border-t-[#d1d5db] z-20 drop-shadow-md origin-top">
+        </div>
+
+        <!-- 심플한 원형 체크 버튼 (클릭 버튼) -->
+        <div class="absolute top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 transition-all duration-500">
+            <button onclick="openLetter()" class="relative group focus:outline-none flex flex-col items-center">
+                <!-- 원형 + 체크 아이콘 -->
+                <!-- bg-[#ffe0bd] (살구색) -> bg-[#1e1b4b] (배경과 같은 짙은 네이비) 변경 -->
+                <!-- 테두리를 추가하여 버튼이 더 또렷하게 보이도록 설정 -->
+                <div class="w-12 h-12 rounded-full bg-[#1e1b4b] shadow-lg flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 border-2 border-white/30 ring-2 ring-white/10 ring-offset-2 ring-offset-transparent">
+                    <!-- 체크 아이콘 색상: text-gray-700 -> text-white (흰색) 변경 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                </div>
+                <!-- 텍스트 힌트 -->
+                <span class="mt-2 text-[11px] text-gray-600 font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-1 drop-shadow-sm">Click to Open</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 오디오 및 페이지 이동 로직
+        const bgmAudio = document.getElementById('bgmAudio');
+        const clickAudio = document.getElementById('clickAudio');
+
+        window.addEventListener('load', () => {
+            bgmAudio.volume = 0.4;
+            const playPromise = bgmAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    document.body.addEventListener('click', function playBgm() {
+                        bgmAudio.play();
+                        document.body.removeEventListener('click', playBgm);
+                    }, { once: true });
+                });
+            }
+        });
+
+        function openLetter() {
+            clickAudio.volume = 0.8;
+            clickAudio.play().catch(e => console.log(e));
+
+            // 클릭 시 시각적 피드백
+            const button = document.querySelector('button');
+            button.classList.add('scale-90', 'opacity-50');
+            
+            // 1초 후 이동
+            setTimeout(() => {
+                window.location.href = '1.html';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
